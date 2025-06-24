@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 	"sync"
 	"time"
 )
@@ -176,6 +177,9 @@ func (l *logger) flush() {
 	if l.flushed {
 		return
 	}
+	fmt.Fprintln(os.Stderr, "<FLUSH>")
+	debug.PrintStack()
+	fmt.Fprintln(os.Stderr, "</FLUSH>")
 	for _, e := range l.entries {
 		l.writeEntry(e)
 	}
