@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 )
@@ -177,9 +178,12 @@ func (l *logger) flush() {
 	if l.flushed {
 		return
 	}
-	fmt.Fprintln(os.Stderr, "<FLUSH>")
-	debug.PrintStack()
-	fmt.Fprintln(os.Stderr, "</FLUSH>")
+	stack := string(debug.Stack())
+	if !strings.Contains(stack, "clue/log.Error") {
+		fmt.Fprintln(os.Stderr, "<FLUSH>")
+		fmt.Fprint(os.Stderr, stack)
+		fmt.Fprintln(os.Stderr, "</FLUSH>")
+	}
 	for _, e := range l.entries {
 		l.writeEntry(e)
 	}
